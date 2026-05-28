@@ -270,7 +270,9 @@
         }
 
         Array.prototype.forEach.call(artboards, function (artboard) {
-          var screens = parseScreens(artboard.getAttribute("data-artboard-screens"));
+          var screens = parseScreens(
+            artboard.getAttribute("data-artboard-screens")
+          );
           var currentScreen = getCurrentScreen(screens);
           var maxScreen = screens[screens.length - 1];
           if (currentScreen === maxScreen) return;
@@ -282,7 +284,11 @@
             screens
           );
           if (artboardHeight) {
-            [artboard, artboard.querySelector(".t396__carrier"), artboard.querySelector(".t396__filter")]
+            [
+              artboard,
+              artboard.querySelector(".t396__carrier"),
+              artboard.querySelector(".t396__filter"),
+            ]
               .filter(Boolean)
               .forEach(function (node) {
                 node.style.height = normalizePx(artboardHeight);
@@ -292,7 +298,9 @@
           Array.prototype.forEach.call(
             artboard.querySelectorAll(".tn-elem[data-fields]"),
             function (element) {
-              var fields = (element.getAttribute("data-fields") || "").split(",");
+              var fields = (element.getAttribute("data-fields") || "").split(
+                ","
+              );
               var container =
                 getFieldValue(element, "container", currentScreen, screens) ||
                 "grid";
@@ -330,7 +338,11 @@
               );
               var elementType = element.getAttribute("data-elem-type");
 
-              if (fields.indexOf("left") !== -1 && left !== null && left !== "") {
+              if (
+                fields.indexOf("left") !== -1 &&
+                left !== null &&
+                left !== ""
+              ) {
                 element.style.left =
                   container === "grid"
                     ? "calc(50% - " + currentScreen / 2 + "px + " + left + "px)"
@@ -1216,6 +1228,7 @@
                 .bg-video-wrap {
                   position: fixed;
                   inset: 0;
+                  height: 100vh;
                   z-index: 0; /* НЕ -1 */
                   pointer-events: none; /* чтобы не мешало кликам */
                   overflow: hidden;
@@ -8920,8 +8933,6 @@
           @media screen and (max-width: 1199px) {
             #rec1944160331 .tn-elem[data-elem-id="1771341100119000010"] {
               display: table;
-              left: 37.5px !important;
-              width: px;
               height: auto;
             }
             #rec1944160331
@@ -9545,7 +9556,7 @@
               data-field-top-value="403"
               data-field-left-value="191"
               data-field-height-value="68"
-              data-field-width-value="948px"
+              data-field-width-value="948"
               data-field-axisy-value="top"
               data-field-axisx-value="left"
               data-field-container-value="grid"
@@ -9558,7 +9569,7 @@
               data-field-top-res-320-value="308"
               data-field-left-res-320-value="11"
               data-field-height-res-320-value="147"
-              data-field-width-res-320-value="311px"
+              data-field-width-res-320-value="311"
               data-field-fontsize-res-320-value="18"
               data-field-left-res-480-value="-52"
               data-field-left-res-640-value="-52"
@@ -9649,7 +9660,7 @@
               data-field-top-value="523"
               data-field-left-value="191"
               data-field-height-value="68"
-              data-field-width-value="848"
+              data-field-width-value="948"
               data-field-axisy-value="top"
               data-field-axisx-value="left"
               data-field-container-value="grid"
@@ -9660,15 +9671,15 @@
               data-field-textfit-value="autoheight"
               data-field-fontsize-value="24"
               data-field-top-res-320-value="493"
-              data-field-left-res-320-value="21"
+              data-field-left-res-320-value="11"
               data-field-height-res-320-value="147"
-              data-field-width-res-320-value="255"
+              data-field-width-res-320-value="311"
               data-field-fontsize-res-320-value="18"
-              data-field-left-res-480-value="-42"
-              data-field-left-res-640-value="-42"
-              data-field-left-res-960-value="158"
+              data-field-left-res-480-value="-52"
+              data-field-left-res-640-value="-52"
+              data-field-left-res-960-value="148"
               data-fields="top,left,width,height,container,axisx,axisy,widthunits,leftunits,topunits"
-              style="top: 523px; left: 166px; width: 848px; height: auto"
+              style="top: 523px; left: 156px; width: 848px; height: auto"
             >
               <div
                 class="tn-atom"
@@ -10268,7 +10279,7 @@
             #rec1944160351 .t396__artboard,
             #rec1944160351 .t396__filter,
             #rec1944160351 .t396__carrier {
-              height: 400px;
+              height: 400px !important;
             }
             #rec1944160351 .t396__filter {
             }
@@ -10303,7 +10314,7 @@
             #rec1944160351 .t396__artboard,
             #rec1944160351 .t396__filter,
             #rec1944160351 .t396__carrier {
-              height: 270px;
+              height: 270px !important;
             }
             #rec1944160351 .t396__filter {
             }
