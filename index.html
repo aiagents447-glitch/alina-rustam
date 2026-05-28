@@ -185,6 +185,186 @@
           }
         return r;
       }
+      function ndtZeroPreRender() {
+        var width = document.documentElement.clientWidth || window.innerWidth;
+        var artboards = document.querySelectorAll(".t396__artboard");
+
+        function parseScreens(value) {
+          return (value || "320,480,640,960,1200")
+            .split(",")
+            .map(function (screen) {
+              return parseInt(screen, 10);
+            })
+            .filter(function (screen) {
+              return !isNaN(screen);
+            })
+            .sort(function (a, b) {
+              return a - b;
+            });
+        }
+
+        function getCurrentScreen(screens) {
+          var current = screens[0];
+          screens.forEach(function (screen) {
+            if (width >= screen) current = screen;
+          });
+          return current;
+        }
+
+        function getFieldValue(element, field, currentScreen, screens) {
+          var maxScreen = screens[screens.length - 1];
+          var value =
+            currentScreen === maxScreen
+              ? element.getAttribute("data-field-" + field + "-value")
+              : element.getAttribute(
+                  "data-field-" + field + "-res-" + currentScreen + "-value"
+                );
+
+          if (value !== null && value !== "") return value;
+
+          for (var index = 0; index < screens.length; index++) {
+            var screen = screens[index];
+            if (screen <= currentScreen) continue;
+            value =
+              screen === maxScreen
+                ? element.getAttribute("data-field-" + field + "-value")
+                : element.getAttribute(
+                    "data-field-" + field + "-res-" + screen + "-value"
+                  );
+            if (value !== null && value !== "") return value;
+          }
+
+          return element.getAttribute("data-field-" + field + "-value");
+        }
+
+        function getArtboardValue(artboard, field, currentScreen, screens) {
+          var maxScreen = screens[screens.length - 1];
+          var value =
+            currentScreen === maxScreen
+              ? artboard.getAttribute("data-artboard-" + field)
+              : artboard.getAttribute(
+                  "data-artboard-" + field + "-res-" + currentScreen
+                );
+
+          if (value !== null && value !== "") return value;
+
+          for (var index = 0; index < screens.length; index++) {
+            var screen = screens[index];
+            if (screen <= currentScreen) continue;
+            value =
+              screen === maxScreen
+                ? artboard.getAttribute("data-artboard-" + field)
+                : artboard.getAttribute(
+                    "data-artboard-" + field + "-res-" + screen
+                  );
+            if (value !== null && value !== "") return value;
+          }
+
+          return artboard.getAttribute("data-artboard-" + field);
+        }
+
+        function normalizePx(value) {
+          if (value === null || value === "" || value === "auto") return value;
+          var numeric = parseFloat(String(value).replace("px", ""));
+          return isNaN(numeric) ? value : numeric + "px";
+        }
+
+        Array.prototype.forEach.call(artboards, function (artboard) {
+          var screens = parseScreens(artboard.getAttribute("data-artboard-screens"));
+          var currentScreen = getCurrentScreen(screens);
+          var maxScreen = screens[screens.length - 1];
+          if (currentScreen === maxScreen) return;
+
+          var artboardHeight = getArtboardValue(
+            artboard,
+            "height",
+            currentScreen,
+            screens
+          );
+          if (artboardHeight) {
+            [artboard, artboard.querySelector(".t396__carrier"), artboard.querySelector(".t396__filter")]
+              .filter(Boolean)
+              .forEach(function (node) {
+                node.style.height = normalizePx(artboardHeight);
+              });
+          }
+
+          Array.prototype.forEach.call(
+            artboard.querySelectorAll(".tn-elem[data-fields]"),
+            function (element) {
+              var fields = (element.getAttribute("data-fields") || "").split(",");
+              var container =
+                getFieldValue(element, "container", currentScreen, screens) ||
+                "grid";
+              var left = getFieldValue(element, "left", currentScreen, screens);
+              var top = getFieldValue(element, "top", currentScreen, screens);
+              var widthValue = getFieldValue(
+                element,
+                "width",
+                currentScreen,
+                screens
+              );
+              var heightValue = getFieldValue(
+                element,
+                "height",
+                currentScreen,
+                screens
+              );
+              var widthMode = getFieldValue(
+                element,
+                "widthmode",
+                currentScreen,
+                screens
+              );
+              var heightMode = getFieldValue(
+                element,
+                "heightmode",
+                currentScreen,
+                screens
+              );
+              var textFit = getFieldValue(
+                element,
+                "textfit",
+                currentScreen,
+                screens
+              );
+              var elementType = element.getAttribute("data-elem-type");
+
+              if (fields.indexOf("left") !== -1 && left !== null && left !== "") {
+                element.style.left =
+                  container === "grid"
+                    ? "calc(50% - " + currentScreen / 2 + "px + " + left + "px)"
+                    : normalizePx(left);
+              }
+              if (fields.indexOf("top") !== -1 && top !== null && top !== "") {
+                element.style.top = normalizePx(top);
+              }
+              if (
+                fields.indexOf("width") !== -1 &&
+                widthValue !== null &&
+                widthValue !== "" &&
+                widthMode !== "hug" &&
+                widthMode !== "fill"
+              ) {
+                element.style.width = normalizePx(widthValue);
+              }
+              if (fields.indexOf("height") !== -1) {
+                if (
+                  heightMode === "hug" ||
+                  heightMode === "fill" ||
+                  textFit === "autoheight" ||
+                  elementType === "text"
+                ) {
+                  element.style.height = "auto";
+                } else if (heightValue !== null && heightValue !== "") {
+                  element.style.height = normalizePx(heightValue);
+                }
+              }
+            }
+          );
+        });
+      }
+      t_onReady(ndtZeroPreRender);
       (window.TN_SCALE_INITIAL_VER = "1.0"),
         (window.tn_scale_initial_window_width = null);
     </script>
